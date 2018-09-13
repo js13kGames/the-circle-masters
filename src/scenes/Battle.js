@@ -55,10 +55,10 @@ export class Battle extends Scene {
     Mouse.onClick = v => {
       if (v.x >= 280 && v.x <= 280 + 18 && v.y >= 337 && v.y <= 337 + 18 ) {
         this.superPower('off')
-      } else if (v.x >= 300 && v.x <= 300 + 18 && v.y >= 337 && v.y <= 337 + 18 ) {
-        this.superPower('1')
-      } else if (v.x >= 320 && v.x <= 320 + 18 && v.y >= 337 && v.y <= 337 + 18 ) {
-        this.superPower('2')
+      // } else if (v.x >= 300 && v.x <= 300 + 18 && v.y >= 337 && v.y <= 337 + 18 ) {
+      //   this.superPower('1')
+      // } else if (v.x >= 320 && v.x <= 320 + 18 && v.y >= 337 && v.y <= 337 + 18 ) {
+      //   this.superPower('2')
       } else if (v.x >= 342 && v.x <= 342 + 18 && v.y >= 337 && v.y <= 337 + 18 ) {
         this.superPower('center')
       } else {
@@ -158,9 +158,7 @@ export class Battle extends Scene {
   }
 
   power(id, n) {
-    // create superpowers
-
-    console.log(id, n)
+    Server.disconnect()
   }
 
   update() {
