@@ -2,6 +2,7 @@ import { Draw, Server } from '../imports.js'
 
 import { Game } from '../systems/Game.js'
 import { Mouse } from '../systems/Mouse.js'
+import { Keyboard } from '../systems/Keyboard.js'
 
 import { Scene } from '../modules/Scene.js'
 import { Camera } from '../modules/Camera.js'
@@ -12,7 +13,7 @@ import { Vector } from '../modules/Vector.js'
 
 import * as Components from '../modules/Components.js'
 
-import { Menu, Disconnected } from '../modules/Scenes.js'
+import { Disconnected, End } from '../modules/Scenes.js'
 
 export class Battle extends Scene {
   constructor(players, id) {
@@ -26,7 +27,7 @@ export class Battle extends Scene {
     this.camera = this.playerId % 2 ? new Camera(-300, -285) : new Camera(350, 350)
     this.physics = new Physics
 
-    this.time = 5 * 60 * 100 + 99
+    this.time = /* 5 * */ 60 * 100 + 99
 
     if (this.playerId % 2) {
 
@@ -52,13 +53,34 @@ export class Battle extends Scene {
     }
 
     Mouse.onClick = v => {
-      const dest = Vector.sub(v, this.camera.position)
-      Server.emit('target', dest.x, dest.y)
+      if (v.x >= 280 && v.x <= 280 + 18 && v.y >= 337 && v.y <= 337 + 18 ) {
+        this.superPower('off')
+      } else if (v.x >= 300 && v.x <= 300 + 18 && v.y >= 337 && v.y <= 337 + 18 ) {
+        this.superPower('1')
+      } else if (v.x >= 320 && v.x <= 320 + 18 && v.y >= 337 && v.y <= 337 + 18 ) {
+        this.superPower('2')
+      } else if (v.x >= 342 && v.x <= 342 + 18 && v.y >= 337 && v.y <= 337 + 18 ) {
+        this.superPower('center')
+      } else {
+        const dest = Vector.sub(v, this.camera.position)
+        Server.emit('target', dest.x, dest.y)
+      }
+    }
+
+    Keyboard.onDown = k => {
+      if (k === 49) this.superPower('off')
+      else if (k === 50) this.superPower('1')
+      else if (k === 51) this.superPower('2')
+      else if (k === 67) this.superPower('center')
     }
 
     Server.on('target', (id, x, y) => {
       [...this.board.values()][id].components.get(Components.Destination.name)
         .setDestination(new Vector(x, y))
+    })
+
+    Server.on('power', (id, n) => {
+      this.power(id, n)
     })
 
     Server.on('disconnect', () => {
@@ -69,9 +91,6 @@ export class Battle extends Scene {
       Server.disconnect()
       this.nextScene(id)
     })
-
-    // todo create superpowers
-    // todo class spec
   }
 
   createHero(e, i) {
@@ -90,7 +109,7 @@ export class Battle extends Scene {
                       i % 2 === this.playerId % 2 ? '#aaf' :
                       '#faa' 
 
-    if (i == this.playerId - 1) this.player = hero
+    if (i == this.playerId) this.player = hero
     
     hero.body = new Components.CircleBody(x, y, 10, 1, heroClass.color, heroClass.speed)
     hero.add(hero.body)
@@ -131,6 +150,19 @@ export class Battle extends Scene {
     return border
   }
 
+  superPower(n) {
+    if (n === 'center')
+      this.camera.position = Vector.add(Vector.not(this.player.body.position), new Vector(320, 180))
+    else 
+      Server.emit('power', n)
+  }
+
+  power(id, n) {
+    // create superpowers
+
+    console.log(id, n)
+  }
+
   update() {
     for (const object of this.board.values()) if (object['update']) object['update']()
 
@@ -142,21 +174,35 @@ export class Battle extends Scene {
   drawUI() {
     Draw.text(320, 20, '#fff', '12px Impact', 'center', (this.time * .01) | 0)
 
-    Draw.rect(280, 330, 80, 4, '#afa')
-    Draw.rect(280, 337, 18, 18, '#fff')
-    Draw.rect(300, 337, 18, 18, '#fff')
-    Draw.rect(320, 337, 18, 18, '#fff')
-    Draw.rect(342, 337, 18, 18, '#fff')
+    const life = this.player.components.get(Components.Life.name)
 
-    
-    // umiejetnosci, wysrodkuj
+    if (!life.alive) {
+      Draw.rect(0, 0, 640, 360, 'rgba(0,0,0,.3)')
+
+      Draw.text(320, 330, '#eee', '20px Impact', 'center', 'Your hero\'s OFFLINE!')
+    } else {
+      Draw.rect(280, 330, 80 * (life.life / life.maxLife), 4, '#afa')
+
+      // umiejetnosci, po uzyciu, ładowanie
+      Draw.rect(280, 337, 18, 18, '#dde')
+      Draw.text(289, 354, '#333', '12px Impact', 'center', 'OFF')
+      Draw.rect(300, 337, 18, 18, '#ded')
+      Draw.text(309, 354, '#333', '12px Impact', 'center', '2')
+      Draw.rect(320, 337, 18, 18, '#edd')
+      Draw.text(329, 354, '#333', '12px Impact', 'center', '3')
+
+      Draw.rect(342, 337, 18, 18, '#ddd')
+      Draw.text(351, 354, '#333', '12px Impact', 'center', 'c')
+    }
   }
 
   fixedUpdate() {
     for (const object of this.board.values()) if (object['fixedUpdate']) object['fixedUpdate']()
 
     this.physics.move(this.board)
-    this.physics.collideObjects(this.board, e => {
+    this.physics.collideObjects([...this.board.values()].filter(e =>
+        !e.components.has(Components.Life.name) || e.components.get(Components.Life.name).alife
+      ), e => {
       if (e.components.has(Components.Life.name))
         e.components.get(Components.Life.name).life -= 10
     })
@@ -170,7 +216,7 @@ export class Battle extends Scene {
   }
 
   nextScene(winner) {
-    Game.setupScene(new Menu)
+    Game.setupScene(new End(winner, this.players))
   }
 
   destroy() {

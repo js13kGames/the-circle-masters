@@ -30,9 +30,7 @@ export class Physics {
     }
   }
 
-  collideObjects(objects, collided) {
-    const arr = [...objects.values()]
-
+  collideObjects(arr, collided) {
     for (let i = 0; i < arr.length; i++)
       for (let j = i + 1; j < arr.length; j++)
         this.collideTwo(arr[i].body, arr[j].body, e => collided(e))

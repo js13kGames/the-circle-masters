@@ -2,7 +2,7 @@ import { Draw } from '../imports.js'
 import { Body } from './Body.js'
 
 import { Vector } from '../modules/Vector.js'
-import { Life } from './Life.js';
+import { Life } from './Life.js'
 
 export class LineBody extends Body {
   constructor(x = 0, y = 0, a = 1, b = 1, mass = 1, color = '#555') {

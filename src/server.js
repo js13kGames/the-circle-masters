@@ -1,5 +1,3 @@
-//@ts-ignore
-const serverStorage = storage
 const playersPerTeam = 2
 const games = []
 
@@ -13,10 +11,6 @@ function getGame() {
 	}
 
 	games.unshift(game)
-
-	serverStorage.get('games', 0).then(games => {
-		serverStorage.set('games', games + 1)
-	})
 
 	return game
 }
@@ -63,6 +57,11 @@ module.exports = {
 				console.log('Target ' + game.id + ', player ' + id + '  ' + x + ' ' + y)
 	
 				player.emit('target', id, x, y).to(game.id).emit('target', id, x, y)
+			},
+			power: (n) => {
+				console.log('Power ' + game.id + ', player ' + id + '  ' + n)
+
+				player.emit('power', id, n).to(game.id).emit('power', id, n)
 			},
 			end: (i) => {
 				console.log('End ' + game.id + ', player ' + id + ' winner ' + i)

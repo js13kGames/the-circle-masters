@@ -1,6 +1,6 @@
 {
   "name": "the-circle-masters",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "js13kgames moba game",
   "license": "MIT",
   "main": "index.js",

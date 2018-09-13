@@ -45,5 +45,5 @@ export const Server = {
   emit: (e, ...a) => Engine.socket['emit'](e, ...a),
   on: (event, callback) => Engine.socket['on'](event, callback),
   off: (...a) => Engine.socket['off'](...a),
-  disconnect: Engine.socket['close']()
+  disconnect: () => Engine.socket['close']()
 }

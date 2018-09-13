@@ -1,6 +1,6 @@
 import { Draw } from '../imports.js'
 import { Body } from './Body.js'
-import { Life } from './Life.js';
+import { Life } from './Life.js'
 
 export class CircleBody extends Body {
   constructor(x = 0, y = 0, radius = 1, mass = 1, color = '#ccc', maxSpeed = 1) {

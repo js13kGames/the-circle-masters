@@ -1,7 +1,7 @@
 import { Component } from '../modules/Component.js'
 import { Draw } from '../imports.js'
-import { Destination } from './Destination.js';
-import { Vector } from '../modules/Vector.js';
+import { Destination } from './Destination.js'
+import { Vector } from '../modules/Vector.js'
 
 const RESET_COUNTDOWN = 400
 

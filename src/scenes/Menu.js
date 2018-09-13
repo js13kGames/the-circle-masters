@@ -2,7 +2,7 @@ import { Scene } from '../modules/Scene.js'
 import { Draw } from '../imports.js'
 import { Keyboard } from '../systems/Keyboard.js'
 import { Mouse } from '../systems/Mouse.js'
-import { Game } from '../systems/Game.js';
+import { Game } from '../systems/Game.js'
 
 import { Lobby } from '../modules/Scenes.js'
 
